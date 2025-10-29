@@ -21,5 +21,13 @@ class StudentDao extends BaseDao {
             'password' => $hashedPassword
         ]);
     }
+
+    public function updateStudent($id, $data) {
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        return $this->update($id, $data);
+    }
 }
 ?>
