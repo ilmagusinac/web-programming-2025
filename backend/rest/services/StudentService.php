@@ -16,5 +16,9 @@ class StudentService extends BaseService {
     public function getByEmail($email) {
         return $this->dao->getByEmail($email);
     }
+
+    public function updateStudent($id, $data) {
+        return $this->dao->updateStudent($id, $data);
+    }
 }
 ?>
