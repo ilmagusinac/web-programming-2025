@@ -5,6 +5,7 @@
  *     path="/student",
  *     tags={"students"},
  *     summary="Get all students",
+ *     security={{"BearerAuth": {}}},
  *     @OA\Response(
  *         response=200,
  *         description="List of all students"
@@ -12,6 +13,7 @@
  * )
  */
 Flight::route('GET /student', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::studentService()->getAll());
 });
 
@@ -20,6 +22,7 @@ Flight::route('GET /student', function() {
  *     path="/student/{id}",
  *     tags={"students"},
  *     summary="Get student by ID",
+ *     security={{"BearerAuth": {}}},
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
@@ -34,6 +37,7 @@ Flight::route('GET /student', function() {
  * )
  */
 Flight::route('GET /student/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::studentService()->getById($id));
 });
 
@@ -42,6 +46,7 @@ Flight::route('GET /student/@id', function($id) {
  *     path="/student/{email}",
  *     tags={"students"},
  *     summary="Get student by email",
+ *     security={{"BearerAuth": {}}},
  *     @OA\Parameter(
  *         name="email",
  *         in="path",
@@ -60,6 +65,7 @@ Flight::route('GET /student/@id', function($id) {
  * )
  */
 Flight::route('GET /student/@email', function($email) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::studentService()->getByEmail($email));
 });
 
@@ -67,14 +73,16 @@ Flight::route('GET /student/@email', function($email) {
  * @OA\Post(
  *     path="/student",
  *     tags={"students"},
+ *     security={{"BearerAuth": {}}},
  *     summary="Create a new student",
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
  *             required={"name", "email", "password"},
  *             @OA\Property(property="name", type="string", example="John Doe"),
- *             @OA\Property(property="email", type="string", example="john@gmail.com"),
- *             @OA\Property(property="password", type="string", example="mypassword123")
+ *             @OA\Property(property="email", type="string", example="ima@gmail.com"),
+ *             @OA\Property(property="password", type="string", example="ima"),
+ *             @OA\Property(property="role", type="string", example="admin"),
  *         )
  *     ),
  *     @OA\Response(
@@ -84,6 +92,7 @@ Flight::route('GET /student/@email', function($email) {
  * )
  */
 Flight::route('POST /student', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::request()->data->getData();
     Flight::json(
         Flight::studentService()->createStudent(
@@ -99,6 +108,7 @@ Flight::route('POST /student', function() {
  *     path="/student/{id}",
  *     tags={"students"},
  *     summary="Update an existing student",
+ *     security={{"BearerAuth": {}}},
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
@@ -111,7 +121,8 @@ Flight::route('POST /student', function() {
  *         @OA\JsonContent(
  *             @OA\Property(property="name", type="string", example="Updated Name"),
  *             @OA\Property(property="email", type="string", example="updated.email@gmail.com"),
- *             @OA\Property(property="password", type="string", example="newpassword123")
+ *             @OA\Property(property="password", type="string", example="newpassword123"),
+ *             @OA\Property(property="role", type="string", example="admin"),
  *         )
  *     ),
  *     @OA\Response(
@@ -121,6 +132,7 @@ Flight::route('POST /student', function() {
  * )
  */
 Flight::route('PUT /student/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     $data = Flight::request()->data->getData();
     Flight::json(Flight::studentService()->updateStudent($id, $data));
 });
@@ -130,6 +142,7 @@ Flight::route('PUT /student/@id', function($id) {
  *     path="/student/{id}",
  *     tags={"students"},
  *     summary="Delete a student by ID",
+ *     security={{"BearerAuth": {}}},
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
@@ -144,15 +157,7 @@ Flight::route('PUT /student/@id', function($id) {
  * )
  */
 Flight::route('DELETE /student/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
     Flight::json(Flight::studentService()->delete($id));
 });
-/*
-{
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@gmail.com",
-    "password": "$2y$10$Jr2cd9Vd9dH4jkiwh9LE3eJwGgw0pTHy5Kb.58kxhMkNPOg1e98xi",
-    "created_at": "2025-10-21 21:54:15"
-}
-*/
 ?>

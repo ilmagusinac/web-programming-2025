@@ -1,5 +1,6 @@
 <?php
-require_once(__DIR__ . "/../config.php");
+//require_once(__DIR__ . "/../config.php");
+require_once __DIR__ . '/Database.php';
 
 class BaseDao {
    protected $table;
@@ -48,5 +49,36 @@ class BaseDao {
        $stmt->bindParam(':id', $id);
        return $stmt->execute();
    }
+
+    protected function query($query, $params = []) {
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    protected function query_unique($query, $params = []) {
+        $stmt = $this->query($query, $params);
+        return $stmt->fetch();
+    }
+
+     public function add($entity)
+    {
+        $query = "INSERT INTO " . $this->table_name . " (";
+        foreach ($entity as $column => $value) {
+            $query .= $column . ', ';
+        }
+        $query = substr($query, 0, -2);
+        $query .= ") VALUES (";
+        foreach ($entity as $column => $value) {
+            $query .= ":" . $column . ', ';
+        }
+        $query = substr($query, 0, -2);
+        $query .= ")";
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute($entity);
+        $entity['id'] = $this->connection->lastInsertId();
+        return $entity;
+    }
 }
 ?>
