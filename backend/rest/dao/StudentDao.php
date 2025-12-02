@@ -13,12 +13,13 @@ class StudentDao extends BaseDao {
         return $stmt->fetch();
     }
 
-    public function createStudent($name, $email, $password) {
+    public function createStudent($name, $email, $password, $role = "user") {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         return $this->insert([
             'name' => $name,
             'email' => $email,
-            'password' => $hashedPassword
+            'password' => $hashedPassword,
+            "role" => $role,
         ]);
     }
 

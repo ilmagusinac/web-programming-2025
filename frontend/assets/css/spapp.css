@@ -1,5 +1,8 @@
+
+
 main#spapp>section {
     display: none;
+    padding-top: 54px;
 }
 
 main#spapp>section:last-child {

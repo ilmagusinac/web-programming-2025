@@ -64,7 +64,7 @@ Flight::route('GET /student/@id', function($id) {
  *     )
  * )
  */
-Flight::route('GET /student/@email', function($email) {
+Flight::route('GET /student/email/@email', function($email) {
     Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]);
     Flight::json(Flight::studentService()->getByEmail($email));
 });
@@ -93,14 +93,18 @@ Flight::route('GET /student/@email', function($email) {
  */
 Flight::route('POST /student', function() {
     Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
-    $data = Flight::request()->data->getData();
+    //$data = Flight::request()->data->getData();
+    $data = json_decode(Flight::request()->getBody(), true);
+    $role = $data['role'] ?? "user";
     Flight::json(
         Flight::studentService()->createStudent(
             $data['name'],
             $data['email'],
-            $data['password']
+            $data['password'],
+            $role
         )
     );
+    error_log("BODY: " . Flight::request()->getBody());
 });
 
 /**
@@ -133,7 +137,8 @@ Flight::route('POST /student', function() {
  */
 Flight::route('PUT /student/@id', function($id) {
     Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
-    $data = Flight::request()->data->getData();
+    //$data = Flight::request()->data->getData();
+    $data = json_decode(Flight::request()->getBody(), true);
     Flight::json(Flight::studentService()->updateStudent($id, $data));
 });
 
